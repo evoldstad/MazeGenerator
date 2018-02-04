@@ -4,17 +4,20 @@ import java.util.ArrayList;
 import java.util.Random;
 
 /**
- * This class does all the hard work.
+ * This class is the representation of the maze. It generates a random maze using Pim's algorithm and keeps track
+ * of the mazes cells/nodes.
+ *
  */
+
 class Maze extends JPanel {
 
-    //Height and length of maze (number of cells).
-    private int length;
-    private int height;
+    //Height and mazeWidth of maze (number of cells).
+    private int mazeWidth;
+    private int mazeHeight;
 
     //Starting position for maze generation.
-    private int startingX = 51;
-    private int startingY = 51;
+    private int startingX;
+    private int startingY;
 
     //Used for scaling purposes.
     private JFrame frame;
@@ -22,16 +25,20 @@ class Maze extends JPanel {
     //Container for all the cells. Represents a map of the maze.
     public Cell[][] map;
 
-    public Maze(int w, int h, JFrame frame) {
-        this.length = w;
-        this.height = h;
-        this.map = new Cell[length][height];
+    public Maze(int mazeWidth, int mazeHeight, int startingX, int startingY, JFrame frame) {
+        this.mazeWidth = mazeWidth;
+        this.mazeHeight = mazeHeight;
+        this.startingX = startingX;
+        this.startingY = startingY;
+
+        this.map = new Cell[this.mazeWidth][this.mazeHeight];
         this.frame = frame;
+
         this.generateNewRandomMaze();
     }
 
     /**
-     * Fill map with nodes.
+     * Fills the map with nodes, links all nodes to their neighbors and generates the maze.
      */
     public void generateNewRandomMaze(){
         fillMapWithLinkedNodes();
@@ -40,28 +47,28 @@ class Maze extends JPanel {
 
     private void fillMapWithLinkedNodes(){
         //Create all cells and set them to type 0 (wall)
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < height; j++){
+        for (int i = 0; i < mazeWidth; i++) {
+            for (int j = 0; j < mazeHeight; j++) {
                map[i][j] = new Cell(0,i,j);
             }
         }
 
         //Link all cells so each cell know its neighbors.
-        for (int i = 0; i < length; i++) {
-            for (int j = 0; j < height; j++){
+        for (int i = 0; i < mazeWidth; i++) {
+            for (int j = 0; j < mazeHeight; j++) {
                 Cell currentCell = map[i][j];
 
                 // Link node with it's neighbors in all directions. Ignore if node is at the edge.
                 if (i != 0) {
                     currentCell.setEast(map[i-1][j]);
                 }
-                if (i != length-1) {
+                if (i != mazeWidth - 1) {
                     currentCell.setWest(map[i+1][j]);
                 }
                 if (j != 0) {
                     currentCell.setNorth(map[i][j-1]);
                 }
-                if (j != height-1) {
+                if (j != mazeHeight - 1) {
                     currentCell.setSouth(map[i][j+1]);
                 }
             }
@@ -95,7 +102,7 @@ class Maze extends JPanel {
                 int newCellX = c.x+relativeX;
                 int newCellY = c.y+relativeY;
 
-                if(0 < newCellX && newCellX < height-1 && 0 < newCellY && newCellY < length-1) {
+                if (0 < newCellX && newCellX < mazeHeight - 1 && 0 < newCellY && newCellY < mazeWidth - 1) {
 
                     newCellToAdd = map[c.x+relativeX][c.y+relativeY];
                     addCellToMaze(newCellToAdd, walls);
@@ -104,7 +111,8 @@ class Maze extends JPanel {
             }
             walls.remove(wallIndex);
         }
-        //Make the last added cell be the goal.
+        //Make the last added cell be the goal. An alternative to this is choosing the goal randomly, which might make
+        //for more interesting searches since they won't always be on the edge of the map.
         newCellToAdd.setType(3);
     }
     private void addCellToMaze(Cell toAdd, ArrayList walls){
@@ -129,8 +137,8 @@ class Maze extends JPanel {
 
                 // Make the cells have a size proportional to the window size.
                 Rectangle r = frame.getBounds();
-                int cellHeight= r.height/height;
-                int cellWidth = r.width/length;
+                int cellHeight = r.height / mazeHeight;
+                int cellWidth = r.width / mazeWidth;
 
                 // Calculate each cells actual x,y position in pixels.
                 int cellX = i * cellWidth;
@@ -161,7 +169,8 @@ class Maze extends JPanel {
                         g.fillRect(cellX, cellY, cellWidth, cellHeight);
                     }
                     break;
-
+                    //More colors can be added for more types. An idea could be to always show the starting node with a
+                    //green color to make it easier to see how far from the start the algorithm has searched so far.
                 }
             }
         }

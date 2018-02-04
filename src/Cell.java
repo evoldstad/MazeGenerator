@@ -1,5 +1,12 @@
 import java.util.ArrayList;
 
+
+/**
+ * This class is used to represent the cells/nodes used in the other classes. It is mostly used for storing information,
+ * and does very little computation. Worth noting is the neighbors and neighborPaths ArrayLists used for keeping track
+ * of both all neighboring cells (neighbors) and all connected paths (neighborPaths). Also worth noting is the behavior
+ * of setType, which interacts with neighboring nodes and "lets them know" this node is traversable.
+ */
 class Cell {
 
     /*
@@ -32,15 +39,19 @@ class Cell {
     public Cell getNorth(){
         return north;
     }
+
     public Cell getEast(){
         return east;
     }
+
     public Cell getSouth(){
         return south;
     }
+
     public Cell getWest(){
         return west;
     }
+
     public int getType(){
         return type;
     }
@@ -49,14 +60,17 @@ class Cell {
         neighbors.add(c);
         this.north = c;
     }
+
     public void setEast(Cell c) {
         neighbors.add(c);
         this.east = c;
     }
+
     public void setSouth(Cell c) {
         neighbors.add(c);
         this.south = c;
     }
+
     public void setWest(Cell c) {
         neighbors.add(c);
         this.west = c;

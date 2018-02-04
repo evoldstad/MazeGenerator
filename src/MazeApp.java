@@ -1,15 +1,28 @@
 import javax.swing.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
 /**
  * This program generates a random maze using a modified version of Prim's algorithm, and displays it using Swing.
  * It then visualises finding the shortest path using a simple version of Djikstra's algorithm (since every step has the
  * same cost this is essentially just a flood-fill).
+ * @author Erik Voldstad
+ * @version 1.0
  */
 public class MazeApp extends JFrame {
 
-    // Size of frame in which the maze will be generated
-    private static int frameSize = 550;
+    // Size of frame (pixels) in which the maze will be generated
+    private static int frameWidth = 540;
+    private static int frameHeight = 540;
+
+    //Size of maze in number of cells. Will be adjusted to fit frame.
+    private static int mazeHeight = 101;
+    private static int mazeWidth = 101;
+
+    //Starting position of both maze generation and of optimal path search.
+    private static int startingX = 51;
+    private static int startingY = 51;
 
     public static void main(String[] args) {
 
@@ -17,18 +30,21 @@ public class MazeApp extends JFrame {
         JFrame frame = new JFrame("Maze");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
-        frame.setSize(frameSize, frameSize);
+        frame.setSize(frameWidth, frameHeight);
 
         //Create the maze and add it to the frame 
-        Maze m = new Maze(101,101,frame);
+        Maze m = new Maze(mazeWidth, mazeHeight, startingX, startingY, frame);
 
         frame.add(m);
         frame.setVisible(true);
         solveMaze(m, frame);
     }
 
-    /*
-    Visualize solving the maze using Djikstra's algorithm.
+    /**
+     * This method is responsible for visualising and solving for the shortest path using a simple version of Djikstra's
+     * algorithm.
+     * @param m         The maze for which find the shortest path.
+     * @param frame     The frame containing the maze. Necessary to make visual updates.
      */
     private static void solveMaze(Maze m, JFrame frame) {
 
