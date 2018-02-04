@@ -13,8 +13,8 @@ class Maze extends JPanel {
     private int height;
 
     //Starting position for maze generation.
-    private int startingX = 100;
-    private int startingY = 100;
+    private int startingX = 51;
+    private int startingY = 51;
 
     //Used for scaling purposes.
     private JFrame frame;
@@ -161,6 +161,7 @@ class Maze extends JPanel {
                         g.fillRect(cellX, cellY, cellWidth, cellHeight);
                     }
                     break;
+
                 }
             }
         }

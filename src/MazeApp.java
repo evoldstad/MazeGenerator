@@ -1,5 +1,3 @@
-import com.sun.org.apache.bcel.internal.generic.PUTSTATIC;
-
 import javax.swing.*;
 import java.util.*;
 
@@ -22,7 +20,7 @@ public class MazeApp extends JFrame {
         frame.setSize(frameSize, frameSize);
 
         //Create the maze and add it to the frame 
-        Maze m = new Maze(201,201,frame);
+        Maze m = new Maze(101,101,frame);
 
         frame.add(m);
         frame.setVisible(true);
