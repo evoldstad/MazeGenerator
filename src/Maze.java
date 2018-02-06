@@ -1,7 +1,5 @@
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * This class is the representation of the maze. It generates a random maze using Pim's algorithm and keeps track
@@ -23,7 +21,7 @@ class Maze extends JPanel {
     private JFrame frame;
 
     //Container for all the cells. Represents a map of the maze.
-    public Cell[][] map;
+    private Cell[][] map;
 
     public Maze(int mazeWidth, int mazeHeight, int startingX, int startingY, JFrame frame) {
         this.mazeWidth = mazeWidth;
@@ -31,25 +29,29 @@ class Maze extends JPanel {
         this.startingX = startingX;
         this.startingY = startingY;
 
-        this.map = new Cell[this.mazeWidth][this.mazeHeight];
+        this.map = newEmptyMap();
         this.frame = frame;
-
-        this.generateNewRandomMaze();
     }
 
-    /**
-     * Fills the map with nodes, links all nodes to their neighbors and generates the maze.
-     */
-    public void generateNewRandomMaze(){
-        fillMapWithLinkedNodes();
-        this.generateMazeWithPrim(map[startingX][startingY]);
+    public Cell[][] newEmptyMap() {
+        Cell[][] map = new Cell[mazeWidth][mazeHeight];
+        fillMapWithLinkedNodes(map);
+
+        return map;
     }
 
-    private void fillMapWithLinkedNodes(){
+    private void fillMapWithLinkedNodes(Cell[][] map) {
+        if (map.length == 0) {
+            throw new IllegalArgumentException("Map can't be empty.");
+        }
+
+        int mazeWidth = map.length;
+        int mazeHeight = map[0].length;
+
         //Create all cells and set them to type 0 (wall)
         for (int i = 0; i < mazeWidth; i++) {
             for (int j = 0; j < mazeHeight; j++) {
-               map[i][j] = new Cell(0,i,j);
+                map[i][j] = new Cell(0, i, j);
             }
         }
 
@@ -75,60 +77,13 @@ class Maze extends JPanel {
         }
     }
 
-    /*
-    This method uses Randomized Prim to generate a random maze.
-    Algorithm is taken from Wikipedia's entry on Maze Generation.
+    /**
+     * Fills the map with nodes, links all nodes to their neighbors and generates the maze.
      */
-    private void generateMazeWithPrim(Cell startingCell){
-        ArrayList<Cell> walls = new ArrayList<>();
-        Random rand = new Random();
-        Cell newCellToAdd = null;
-
-        // Add cell to maze, and add its walls to wall-list.
-        addCellToMaze(startingCell, walls);
-
-        // While there are walls in the list...
-        while(walls.size() > 0) {
-
-            //Pick a random wall from the list.
-            int wallIndex = rand.nextInt(walls.size());
-            Cell c = walls.get(wallIndex);
-
-            //If only one of the two cells the wall divides is visited, add the other cell to the maze.
-            if (c.neighborPaths.size() == 1) {
-                int relativeX = c.x-c.neighborPaths.get(0).x;
-                int relativeY = c.y-c.neighborPaths.get(0).y;
-
-                int newCellX = c.x+relativeX;
-                int newCellY = c.y+relativeY;
-
-                if (0 < newCellX && newCellX < mazeHeight - 1 && 0 < newCellY && newCellY < mazeWidth - 1) {
-
-                    newCellToAdd = map[c.x+relativeX][c.y+relativeY];
-                    addCellToMaze(newCellToAdd, walls);
-                    c.setType(1);
-                }
-            }
-            walls.remove(wallIndex);
-        }
-        //Make the last added cell be the goal. An alternative to this is choosing the goal randomly, which might make
-        //for more interesting searches since they won't always be on the edge of the map.
-        newCellToAdd.setType(3);
+    public void generateNewRandomMaze(RandomMazeGenerator gen) {
+        map = gen.generateRandomMaze(mazeWidth, mazeHeight, startingX, startingY);
     }
-    private void addCellToMaze(Cell toAdd, ArrayList walls){
 
-        //Mark starting cell as part of the maze.
-        toAdd.setType(1);
-        this.repaint();
-
-        //Add cell walls to wall-list
-        for (Cell c : toAdd.neighbors){
-           if (c != null) {
-               walls.add(c);
-           }
-        }
-
-    }
     protected void paintComponent(Graphics g) {
 
         //Draw all the cells.
@@ -176,6 +131,17 @@ class Maze extends JPanel {
         }
     }
 
+    public int getMazeWidth() {
+        return mazeWidth;
+    }
+
+    public int getMazeHeight() {
+        return mazeHeight;
+    }
+
+    public Cell[][] getMap() {
+        return map;
+    }
     public int[] getStartingPos(){
         return new int[]{startingX,startingY};
     }

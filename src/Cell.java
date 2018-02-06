@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /**
@@ -10,22 +11,19 @@ import java.util.ArrayList;
 class Cell {
 
     /*
-     Type of cells:
-     0: wall
-     1: path (part of maze)
-     2: visited path
-     3: goal
-    */
+      Type of cells:
+      0: wall
+      1: path (part of maze)
+      2: visited path
+      3: goal
+     */
     private int type;
 
     // x,y position for cell
     public int x,y;
 
-    // Will be used for referencing connected nodes. 
-    private Cell north,east,south,west = null;
-
     //List of all known neighbors. 
-    public ArrayList<Cell> neighbors = new ArrayList<>();
+    private HashMap<Direction, Cell> neighbors = new HashMap<>();
 
     //List of all known neighbors of type 1 (valid paths).
     public ArrayList<Cell> neighborPaths = new ArrayList<>();
@@ -37,49 +35,49 @@ class Cell {
     }
 
     public Cell getNorth(){
-        return north;
+        return neighbors.get(Direction.north);
+    }
+
+    public void setNorth(Cell c) {
+        neighbors.put(Direction.north, c);
     }
 
     public Cell getEast(){
-        return east;
+        return neighbors.get(Direction.east);
     }
 
-    public Cell getSouth(){
-        return south;
-    }
-
-    public Cell getWest(){
-        return west;
+    public void setEast(Cell c) {
+        neighbors.put(Direction.east, c);
     }
 
     public int getType(){
         return type;
     }
 
-    public void setNorth(Cell c) {
-        neighbors.add(c);
-        this.north = c;
-    }
-
-    public void setEast(Cell c) {
-        neighbors.add(c);
-        this.east = c;
+    public Cell getSouth() {
+        return neighbors.get(Direction.south);
     }
 
     public void setSouth(Cell c) {
-        neighbors.add(c);
-        this.south = c;
+        neighbors.put(Direction.south, c);
+    }
+
+    public Cell getWest() {
+        return neighbors.get(Direction.west);
     }
 
     public void setWest(Cell c) {
-        neighbors.add(c);
-        this.west = c;
+        neighbors.put(Direction.west, c);
+    }
+
+    public HashMap<Direction, Cell> getNeighbors() {
+        return neighbors;
     }
 
     public void setType(int i){
         if(i == 1) {
             //If cell becomes part of the maze, notify surrounding cells.
-            for (Cell c : neighbors) {
+            for (Cell c : neighbors.values()) {
                 if (c != null){
                     c.neighborPaths.add(this);
                 }
